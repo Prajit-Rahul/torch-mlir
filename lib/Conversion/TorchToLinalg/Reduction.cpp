@@ -97,7 +97,7 @@ public:
       if (isa<mlir::IntegerType>(inElementType)) {
         auto integerTy = dyn_cast<mlir::IntegerType>(
             cast<BaseTensorType>(op.getSelf().getType()).getDtype());
-        isUnsigned = integerTy.isUnsigned();
+        isUnsigned = integerTy.isUnsigned() || integerTy.getWidth() == 1;
       } else {
         return rewriter.notifyMatchFailure(
             op, opName + " to linalg.* requires Float or Integer "

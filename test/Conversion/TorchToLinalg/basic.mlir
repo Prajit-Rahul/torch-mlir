@@ -1065,6 +1065,39 @@ func.func @torch.aten.max.dim$basic(%arg0: tensor<3x2x3xf32>) -> tensor<3x2x1xf3
   return %1 : tensor<3x2x1xf32>
 }
 
+// -----
+
+// CHECK-LABEL: func.func @torch.aten.max.dim$bool
+// CHECK: %[[INIT:.*]] = arith.constant false
+// CHECK: linalg.fill ins(%[[INIT]] : i1)
+// CHECK: arith.maxui
+// CHECK: arith.cmpi ugt
+func.func @torch.aten.max.dim$bool(
+    %arg0: !torch.vtensor<[4,2],i1>) -> !torch.vtensor<[4],i1> {
+  %dim = torch.constant.int 1
+  %keepdim = torch.constant.bool false
+  %values, %indices = torch.aten.max.dim %arg0, %dim, %keepdim
+      : !torch.vtensor<[4,2],i1>, !torch.int, !torch.bool
+      -> !torch.vtensor<[4],i1>, !torch.vtensor<[4],si64>
+  return %values : !torch.vtensor<[4],i1>
+}
+
+// -----
+
+// CHECK-LABEL: func.func @torch.aten.min.dim$bool
+// CHECK: %[[INIT:.*]] = arith.constant true
+// CHECK: linalg.fill ins(%[[INIT]] : i1)
+// CHECK: arith.minui
+// CHECK: arith.cmpi ult
+func.func @torch.aten.min.dim$bool(
+    %arg0: !torch.vtensor<[4,2],i1>) -> !torch.vtensor<[4],i1> {
+  %dim = torch.constant.int 1
+  %keepdim = torch.constant.bool false
+  %values, %indices = torch.aten.min.dim %arg0, %dim, %keepdim
+      : !torch.vtensor<[4,2],i1>, !torch.int, !torch.bool
+      -> !torch.vtensor<[4],i1>, !torch.vtensor<[4],si64>
+  return %values : !torch.vtensor<[4],i1>
+}
 
 // -----
 
